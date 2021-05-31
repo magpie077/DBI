@@ -1,0 +1,19 @@
+
+START
+----------
+lineitem	21432
+l_partkey	200000
+l_shipinstruct	4
+l_shipmode	7
+----------
+END
+___________________________
+
+START
+----------
+part	21432
+p_container	40
+p_partkey	200000
+----------
+END
+___________________________
