@@ -1,0 +1,98 @@
+CC = g++ -O2 -Wno-deprecated -std=c++11
+
+tag = -i
+
+ifdef linux
+tag = -n
+endif
+
+test.out: Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o GenericDBFile.o HeapFile.o Pipe.o BigQ.o RelOp.o Function.o SortedFile.o y.tab.o yyfunc.tab.o lex.yy.o lex.yyfunc.o test.o
+	$(CC) -o test.out Record.o Comparison.o ComparisonEngine.o Schema.o File.o GenericDBFile.o DBFile.o HeapFile.o Pipe.o BigQ.o RelOp.o Function.o SortedFile.o y.tab.o yyfunc.tab.o lex.yy.o lex.yyfunc.o test.o -ll -lpthread
+
+
+a2test.out: Record.o Comparison.o SortedFile.o GenericDBFile.o HeapFile.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o yyfunc.tab.o lex.yy.o lex.yyfunc.o a2test.o
+	$(CC) -o a2test.out Record.o Comparison.o SortedFile.o GenericDBFile.o HeapFile.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o yyfunc.tab.o lex.yy.o lex.yyfunc.o a2test.o -ll -lpthread
+
+
+gtest.out: Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o GenericDBFile.o HeapFile.o SortedFile.o Pipe.o RelOp.o Function.o y.tab.o yyfunc.tab.o lex.yy.o lex.yyfunc.o gtest.o
+	$(CC) -o gtest.out Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o GenericDBFile.o HeapFile.o SortedFile.o Pipe.o RelOp.o Function.o y.tab.o yyfunc.tab.o lex.yy.o lex.yyfunc.o $(LIBPATH) gtest.o -l pthread -lgtest
+
+gtest.o: gtest.cc
+	$(CC) -g -c gtest.cc
+
+test.o: test.cc
+	$(CC) -g -c test.cc
+
+a2-2test.o: a2-2test.cc
+	$(CC) -g -c a2-2test.cc
+
+a2test.o: a2test.cc
+	$(CC) -g -c a2test.cc
+
+a1-test.o: a1-test.cc
+	$(CC) -g -c a1-test.cc
+
+Comparison.o: Comparison.cc
+	$(CC) -g -c Comparison.cc
+
+ComparisonEngine.o: ComparisonEngine.cc
+	$(CC) -g -c ComparisonEngine.cc
+
+GenericDBFile.o: GenericDBFile.cc
+	$(CC) -g -c GenericDBFile.cc
+
+DBFile.o: DBFile.cc
+	$(CC) -g -c DBFile.cc
+
+Pipe.o: Pipe.cc
+	$(CC) -g -c Pipe.cc
+
+BigQ.o: BigQ.cc
+	$(CC) -g -c BigQ.cc
+
+HeapFile.o: HeapFile.cc
+	$(CC) -g -c HeapFile.cc
+
+RelOp.o: RelOp.cc
+	$(CC) -g -c RelOp.cc
+
+Function.o: Function.cc
+	$(CC) -g -c Function.cc
+
+File.o: File.cc
+	$(CC) -g -c File.cc
+
+Record.o: Record.cc
+	$(CC) -g -c Record.cc
+
+SortedFile.o: SortedFile.cc
+	$(CC) -g -c SortedFile.cc
+
+Schema.o: Schema.cc
+	$(CC) -g -c Schema.cc
+
+y.tab.o: Parser.y
+	yacc -d Parser.y
+	#sed $(tag) y.tab.c -e "s/  _attribute_ ((_unused))$$/# ifndef __cplusplus\n  __attribute_ ((_unused_));\n# endif/"
+	g++ -c y.tab.c
+
+yyfunc.tab.o: ParserFunc.y
+	yacc -p "yyfunc" -b "yyfunc" -d ParserFunc.y
+	#sed $(tag) yyfunc.tab.c -e "s/  _attribute_ ((_unused))$$/# ifndef __cplusplus\n  __attribute_ ((_unused_));\n# endif/"
+	g++ -c yyfunc.tab.c
+
+lex.yy.o: Lexer.l
+	lex Lexer.l
+	gcc  -c lex.yy.c
+
+lex.yyfunc.o: LexerFunc.l
+	lex -Pyyfunc LexerFunc.l
+	gcc  -c lex.yyfunc.c
+
+
+clean:
+	rm -f *.o
+	rm -f *.out
+	rm -f y.tab.*
+	rm -f yyfunc.tab.*
+	rm -f lex.yy.*
